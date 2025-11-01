@@ -1,0 +1,22 @@
+{
+    "name": "SOS 求救燈號",
+    "short_name": "SOS PWA",
+    "description": "使用手電筒或螢幕發送摩斯電碼 SOS 求救訊號。",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#f44336",
+    "icons": [
+      {
+        "src": "images/icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "images/icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "orientation": "portrait"
+  }
