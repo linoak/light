@@ -1,5 +1,5 @@
 {
-  "name": "空氣品質監測 App",
+  "name": "SOS 救援工具箱 App",
   "short_name": "AirQualitySOS",
   "start_url": "./index.html",
   "display": "standalone",
@@ -13,3 +13,4 @@
     }
   ]
 }
+
