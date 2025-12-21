@@ -244,69 +244,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- 5. Siren Logic ---
-    function initAudio() {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!audioContext) {
-            audioContext = new AudioContext();
-        }
-        if (audioContext.state === 'suspended') {
-            audioContext.resume();
-        }
-    }
+    let sirenAudio = new Audio('alarm.mp3');
+    sirenAudio.loop = true;
 
     function startSiren() {
-        initAudio();
-        // Create nodes
-        sirenOscillator = audioContext.createOscillator();
-        sirenGain = audioContext.createGain();
-
-        sirenOscillator.connect(sirenGain);
-        sirenGain.connect(audioContext.destination);
-
-        // Siren effect: Ramp frequency up and down
-        // 600Hz to 1200Hz loop
-        const now = audioContext.currentTime;
-        sirenOscillator.type = 'sawtooth';
-        sirenOscillator.frequency.setValueAtTime(600, now);
-
-        // Use LFO to modulate frequency for smoother siren
-        // Actually, let's just use linearRampToValueAtTime in a loop or an LFO oscillator
-        // LFO approach is cleaner
-        // Main Osc (tone) <--- LFO (modulator)
-        // But WebAudio standard LFO is: Osc1.freq = Base + LFO * Depth
-
-        // Simpler approach: explicit scheduling in a look-ahead loop is complex.
-        // Let's use an LFO connected to the frequency param of the main oscillator.
-
-        // However, connecting an AudioNode to a Param is the standard way.
-        // We want 600Hz -> 1200Hz. Center 900Hz, +/- 300Hz.
-        sirenOscillator.frequency.value = 900;
-
-        const lfo = audioContext.createOscillator();
-        lfo.type = 'triangle'; // Smooth up and down
-        lfo.frequency.value = 0.5; // 0.5 Hz = 2 seconds cycle (1s up, 1s down) - Typical emergency siren speed
-
-        const lfoGain = audioContext.createGain();
-        lfoGain.gain.value = 300; // Depth: +/- 300Hz (600 to 1200 range)
-
-        lfo.connect(lfoGain);
-        lfoGain.connect(sirenOscillator.frequency);
-
-        lfo.start();
-        sirenOscillator.start();
-
-        // Save references to stop later
-        sirenOscillator.stopLfo = () => lfo.stop();
+        // Must interact with document first, which is covered by the click handler
+        sirenAudio.currentTime = 0;
+        sirenAudio.play().catch(e => {
+            console.error(e);
+            showError("無法播放音效：" + e.message);
+            stopSiren();
+        });
     }
 
     function stopSiren() {
-        if (sirenOscillator) {
-            try {
-                sirenOscillator.stop();
-                if (sirenOscillator.stopLfo) sirenOscillator.stopLfo();
-            } catch (e) { }
-            sirenOscillator = null;
-        }
+        sirenAudio.pause();
+        sirenAudio.currentTime = 0;
+
         isSirenOn = false;
         btnSiren.classList.remove('is-active-siren');
         btnSiren.classList.remove('is-danger');
