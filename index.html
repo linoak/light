@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>空氣品質監測 App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        .full-height {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 1.5rem;
+        }
+
+        .status-card {
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .control-button {
+            height: 120px;
+            font-size: 1.2rem;
+            flex-direction: column;
+            gap: 10px;
+            transition: transform 0.1s;
+        }
+
+        .control-button:active {
+            transform: scale(0.98);
+        }
+
+        .control-button i {
+            font-size: 2.5rem;
+        }
+
+        .is-active-sos {
+            animation: sos-flash 0.5s infinite;
+        }
+
+        .is-active-siren {
+            animation: siren-pulse 0.5s infinite;
+        }
+
+        @keyframes sos-flash {
+
+            0%,
+            100% {
+                background-color: #f14668;
+                border-color: transparent;
+                color: white;
+            }
+
+            50% {
+                background-color: white;
+                border-color: #f14668;
+                color: #f14668;
+            }
+        }
+
+        @keyframes siren-pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(241, 70, 104, 0.7);
+            }
+
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(241, 70, 104, 0);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(241, 70, 104, 0);
+            }
+        }
+
+        #coords-display {
+            font-family: monospace;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+
+<body class="has-background-light full-height">
+
+    <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="#">
+                <span class="icon is-medium mr-2">
+                    <i class="fas fa-wind"></i>
+                </span>
+                <span class="is-size-4 has-text-weight-bold">空氣品質監測</span>
+            </a>
+        </div>
+    </nav>
+
+    <main class="main-content container is-max-tablet">
+
+        <!-- Location Section -->
+        <div class="box status-card has-text-centered">
+            <h2 class="title is-4 mb-4">
+                <i class="fas fa-map-marker-alt has-text-info mr-2"></i>
+                目前位置
+            </h2>
+            <div id="coords-display" class="notification is-info is-light mb-4">
+                尚未取得位置
+            </div>
+            <button id="btn-location" class="button is-info is-outlined is-fullwidth">
+                <span class="icon"><i class="fas fa-location-arrow"></i></span>
+                <span>更新位置</span>
+            </button>
+        </div>
+
+        <!-- Controls Grid -->
+        <div class="columns is-multiline is-mobile">
+
+            <!-- Flashlight -->
+            <div class="column is-12-mobile is-4-tablet">
+                <button id="btn-torch" class="button is-white Box control-button is-fullwidth has-text-warning-dark">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>手電筒</span>
+                </button>
+            </div>
+
+            <!-- SOS -->
+            <div class="column is-6-mobile is-4-tablet">
+                <button id="btn-sos" class="button is-white Box control-button is-fullwidth has-text-danger">
+                    <i class="fas fa-life-ring"></i>
+                    <span>SOS 燈號</span>
+                </button>
+            </div>
+
+            <!-- Siren -->
+            <div class="column is-6-mobile is-4-tablet">
+                <button id="btn-siren" class="button is-white Box control-button is-fullwidth has-text-danger">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>警報聲</span>
+                </button>
+            </div>
+
+        </div>
+
+        <div id="error-message" class="notification is-danger is-light is-hidden mt-4">
+            <button class="delete"></button>
+            <span id="error-text"></span>
+        </div>
+
+    </main>
+
+    <footer class="footer p-4 has-background-white-ter">
+        <div class="content has-text-centered is-size-7">
+            <p>
+                <strong>AirQualitySOS</strong> by Gemini Antigravity
+            </p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW registered'))
+                    .catch(err => console.log('SW registration failed', err));
+            });
+        }
+    </script>
+</body>
+
+</html>
